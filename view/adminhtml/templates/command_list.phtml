@@ -1,0 +1,136 @@
+<?php
+/** @var \Codilar\CliProcessManagement\Block\Adminhtml\CommandList $block */
+$commands = $block->getCommands();
+$fetchFrequency = 2000;
+$tableHeaders = $block->getTableHeaders();
+$commandLogUrl = $block->getCommandLogUrl();
+$truncateCommandLogUrl = $block->getTruncateCommandLogUrl();
+$commandLExecuteUrl = $block->getCommandExecuteUrl();
+?>
+<div class="cli-command-container" id="cli-command-container">
+    <div class="admin__data-grid-wrap admin__data-grid-wrap-static">
+        <table class="data-grid commands">
+            <thead>
+            <tr>
+                <?php foreach ($tableHeaders as $tableHeader): ?>
+                    <th class="data-grid-th"><?= $tableHeader ?></th>
+                <?php endforeach; ?>
+            </tr>
+            </thead>
+            <tbody>
+            <?php if (count($commands)): ?>
+                <?php foreach ($commands as $commandId => $command): ?>
+                    <tr>
+                        <td><?= $command->getName() ?></td>
+                        <td><?= $command->getDescription() ?></td>
+                        <td><?= $command->getCommand() ?></td>
+                        <td class="actions">
+                            <button class="action action-default primary" data-command-id="<?= $commandId ?>"><?= __('Execute') ?></button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr class="data-grid-tr-no-data">
+                    <td colspan="<?= count($tableHeaders) ?>"><?= __('We couldn\'t find any records.') ?></td>
+                </tr>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <div id="command-log-container">
+        <button class="action action-default primary" id="truncate-command-log"><?= __('Clear log') ?></button>
+        <pre id="command-log"></pre>
+    </div>
+</div>
+
+<script type="text/javascript">
+    require([
+        'jquery'
+    ], function ($) {
+        var fetchFrequency = <?= $fetchFrequency ?>;
+        var commandLogUrl = '<?= $commandLogUrl ?>';
+        var commandLExecuteUrl = '<?= $commandLExecuteUrl ?>';
+        var truncateCommandLogUrl = '<?= $truncateCommandLogUrl ?>';
+        var formKey = '<?= $block->getFormKey() ?>';
+
+        var doApiCall = function (url, method, data, callback) {
+            if (typeof callback !== 'function') {
+                callback = function () {};
+            }
+            var options = {
+                method: method
+            };
+            if (method !== 'GET') {
+                options.body = new URLSearchParams(data)
+            }
+            fetch(url, options).then(function (response) {
+                return response.json();
+            }).then(function (response) {
+                callback(response.data)
+            }).catch(function (e) {
+                callback(e);
+            });
+        }
+
+        var fetchLog = function (callback) {
+            doApiCall(commandLogUrl, 'GET', null, function (response) {
+                var commandLogElement = $('#command-log');
+                if (response !== commandLogElement.html()) {
+                    commandLogElement.html(response).scrollTop(commandLogElement.get(0).scrollHeight);
+                }
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            })
+        }
+
+        var keepFetchingLog = function () {
+            fetchLog(function () {
+                setTimeout(keepFetchingLog, fetchFrequency);
+            });
+        }
+
+        $('#cli-command-container .commands .actions .action').on('click', function (e) {
+            e.preventDefault();
+            var action = $(this);
+            var commandId = action.data('command-id');
+            action.prop('disabled', true);
+            $('body').trigger('processStart');
+            doApiCall(commandLExecuteUrl, 'POST', {
+                form_key: formKey,
+                command_id: commandId
+            }, function () {
+                setTimeout(function () {
+                    action.prop('disabled', false);
+                    $('body').trigger('processStop');
+                }, fetchFrequency);
+            });
+        });
+
+        $('#truncate-command-log').on('click', function () {
+            $('body').trigger('processStart');
+            doApiCall(truncateCommandLogUrl, 'GET', null, function () {
+                setTimeout(function () {
+                    $('body').trigger('processStop');
+                }, fetchFrequency);
+            });
+        });
+
+        keepFetchingLog();
+
+    });
+</script>
+
+<style>
+    #command-log {
+        min-height: 400px;
+        height: 400px;
+        overflow-y: scroll;
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid silver;
+        background: #0a0a0a;
+        color: #f0f0f0;
+    }
+</style>

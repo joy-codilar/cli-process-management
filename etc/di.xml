@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="cli_command_run" xsi:type="object">Codilar\CliProcessManagement\Console\Command\CliCommandRun</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="Codilar\CliProcessManagement\Model\Command\Ls" type="Codilar\CliProcessManagement\Model\Command\AbstractCommand">
+        <arguments>
+            <argument name="name" xsi:type="string">Ls</argument>
+            <argument name="description" xsi:type="string">List the files in the directory</argument>
+            <argument name="command" xsi:type="string">ls -la</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Codilar\CliProcessManagement\Model\Command\WhoAmI" type="Codilar\CliProcessManagement\Model\Command\AbstractCommand">
+        <arguments>
+            <argument name="name" xsi:type="string">Who am I</argument>
+            <argument name="description" xsi:type="string">Executes the whoami command to return the current user's name</argument>
+            <argument name="command" xsi:type="string">whoami</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Codilar\CliProcessManagement\Model\Command\CrontabList" type="Codilar\CliProcessManagement\Model\Command\AbstractCommand">
+        <arguments>
+            <argument name="name" xsi:type="string">Crontab List</argument>
+            <argument name="description" xsi:type="string">Lists the active crons for current user</argument>
+            <argument name="command" xsi:type="string">crontab -l</argument>
+        </arguments>
+    </virtualType>
+    <type name="Codilar\CliProcessManagement\Model\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="ls" xsi:type="object">Codilar\CliProcessManagement\Model\Command\Ls</item>
+                <item name="whoami" xsi:type="object">Codilar\CliProcessManagement\Model\Command\WhoAmI</item>
+                <item name="crontab-list" xsi:type="object">Codilar\CliProcessManagement\Model\Command\CrontabList</item>
+            </argument>
+        </arguments>
+        <plugin name="add-dynamic-commands" type="Codilar\CliProcessManagement\Plugin\Model\CommandPool" />
+    </type>
+</config>

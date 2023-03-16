@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <cli_process_management>
+            <general>
+                <append_log_file_reading_command>0</append_log_file_reading_command>
+                <log_file_number_of_lines_to_tail>200</log_file_number_of_lines_to_tail>
+            </general>
+        </cli_process_management>
+    </default>
+</config>
