@@ -5,6 +5,7 @@ $fetchFrequency = 2000;
 $tableHeaders = $block->getTableHeaders();
 $commandLogUrl = $block->getCommandLogUrl();
 $truncateCommandLogUrl = $block->getTruncateCommandLogUrl();
+$downloadCommandLogUrl = $block->getDownloadCommandLogUrl();
 $commandLExecuteUrl = $block->getCommandExecuteUrl();
 ?>
 <div class="cli-command-container" id="cli-command-container">
@@ -39,6 +40,7 @@ $commandLExecuteUrl = $block->getCommandExecuteUrl();
     </div>
     <div id="command-log-container">
         <button class="action action-default primary" id="truncate-command-log"><?= __('Clear log') ?></button>
+        <a class="action abs-action-primary" id="download-command-log" href="<?= $downloadCommandLogUrl ?>"><?= __('Download log') ?></a>
         <pre id="command-log"></pre>
     </div>
 </div>
@@ -75,7 +77,7 @@ $commandLExecuteUrl = $block->getCommandExecuteUrl();
         var fetchLog = function (callback) {
             doApiCall(commandLogUrl, 'GET', null, function (response) {
                 var commandLogElement = $('#command-log');
-                if (response !== commandLogElement.html()) {
+                if (response !== commandLogElement.text()) {
                     commandLogElement.html(response).scrollTop(commandLogElement.get(0).scrollHeight);
                 }
                 if (typeof callback === 'function') {

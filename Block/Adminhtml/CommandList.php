@@ -71,6 +71,14 @@ class CommandList extends Template
     /**
      * @return string
      */
+    public function getDownloadCommandLogUrl(): string
+    {
+        return $this->getUrl('*/*/downloadLog');
+    }
+
+    /**
+     * @return string
+     */
     public function getCommandExecuteUrl(): string
     {
         return $this->getUrl('*/*/execute');
