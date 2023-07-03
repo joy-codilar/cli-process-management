@@ -1,6 +1,7 @@
 {
     "name": "codilar/cli-process-management",
     "description": "A magento extension to allow Magento admins to execute certain CLI commands",
+    "version": "1.0.0",
     "type": "magento2-module",
     "license": "proprietary",
     "authors": [

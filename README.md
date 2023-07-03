@@ -1,5 +1,8 @@
 # A magento extension to allow Magento admins to execute certain CLI commands
 
+### Installation
+`composer require codilar/cli-process-management`
+
 ## Running commands as admin
 
 After logging in go to __System__ > __Tools__ > __CLI Process Management__ to see the list of available commands. Click on the Execute button for whichever command you want to run
